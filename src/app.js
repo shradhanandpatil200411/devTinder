@@ -5,6 +5,7 @@ const User = require("./Model/userSchema");
 
 app.use(express.json());
 
+// Signup api add new user
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
 
@@ -15,6 +16,8 @@ app.post("/signup", async (req, res) => {
     res.status(400).send("user is not save :" + err.message);
   }
 });
+
+// get all user data api
 
 app.get("/feed", async (req, res) => {
   try {
@@ -29,7 +32,9 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-app.get("/findByEmail", async (req, res) => {
+// get data by email id
+
+app.get("/userByEmail", async (req, res) => {
   try {
     const getData = await User.findOne({ email: req.body.email });
     if (!getData) {
@@ -42,7 +47,9 @@ app.get("/findByEmail", async (req, res) => {
   }
 });
 
-app.get("/findById", async (req, res) => {
+// get data use a id
+
+app.get("/userById", async (req, res) => {
   try {
     const getData = await User.findById({ _id: req.body._id });
     if (!getData) {
@@ -52,6 +59,33 @@ app.get("/findById", async (req, res) => {
     }
   } catch (err) {
     res.status(404).send("Data Not Found");
+  }
+});
+
+// create a Deleted use api
+
+app.delete("/user", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    await User.findByIdAndDelete(userId);
+    res.send("user deleted successfully");
+  } catch (err) {
+    res.send("Something  wrong ");
+  }
+});
+
+// update the user
+
+app.patch("/user", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const userData = req.body;
+    const user = await User.findByIdAndUpdate(userId, userData, {
+      returnDocument: "after",
+    });
+    res.send(user);
+  } catch (err) {
+    res.send("something wrong");
   }
 });
 
