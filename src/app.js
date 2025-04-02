@@ -74,7 +74,7 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-// update the user
+// update the user by id
 
 app.patch("/user", async (req, res) => {
   try {
@@ -86,6 +86,24 @@ app.patch("/user", async (req, res) => {
     res.send(user);
   } catch (err) {
     res.send("something wrong");
+  }
+});
+
+// update user by email id use findOne
+
+app.patch("/userEmail", async (req, res) => {
+  try {
+    const userEmail = req.body.email;
+    const userData = req.body;
+
+    console.log(userEmail, userData);
+
+    const user = await User.findOneAndUpdate({ email: userEmail }, userData, {
+      returnDocument: "after",
+    });
+    res.send(user);
+  } catch (err) {
+    res.status(404).send("something wrong");
   }
 });
 
