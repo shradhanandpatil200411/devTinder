@@ -17,7 +17,6 @@ app.post("/signup", async (req, res) => {
       req.body;
     // Create password hash
     const hashPassword = await bcrypt.hash(password, 10);
-    console.log(hashPassword);
 
     const user = new User({
       firstName,
