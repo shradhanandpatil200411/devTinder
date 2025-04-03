@@ -2,17 +2,37 @@ const express = require("express");
 const connectDB = require("./Config/dataBase");
 const app = express();
 const User = require("./Model/userSchema");
+const validateUser = require("./Helper/validateUserData");
+const bcrypt = require("bcrypt");
 
 app.use(express.json());
 
 // Signup api add new user
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
   try {
+    // validated the user Data use helper create a helper function
+    validateUser(req);
+
+    const { firstName, lastName, email, password, about, skills, age } =
+      req.body;
+    // Create password hash
+    const hashPassword = await bcrypt.hash(password, 10);
+    console.log(hashPassword);
+
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashPassword,
+      about,
+      skills,
+      age,
+    });
+
     await user.save();
     res.send(user);
   } catch (err) {
-    res.status(400).send("user is not save :" + err.message);
+    res.status(400).send("ERROR :" + err.message);
   }
 });
 
