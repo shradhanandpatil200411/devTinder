@@ -8,7 +8,6 @@ app.use(express.json());
 // Signup api add new user
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
-
   try {
     await user.save();
     res.send(user);
@@ -78,14 +77,23 @@ app.delete("/user", async (req, res) => {
 
 app.patch("/user", async (req, res) => {
   try {
+    const ALLOWUPDATE = ["age", "gender", "skills", "photoUrl"];
+
     const userId = req.body.userId;
     const userData = req.body;
+    const isUpdate = Object.keys(userData).every((k) => {
+      ALLOWUPDATE.includes(k);
+    });
+
+    if (isUpdate) {
+      throw new Error("update is not allowed ");
+    }
     const user = await User.findByIdAndUpdate(userId, userData, {
       returnDocument: "after",
     });
     res.send(user);
   } catch (err) {
-    res.send("something wrong");
+    res.send("something wrong :" + err.message);
   }
 });
 
