@@ -4,8 +4,11 @@ const app = express();
 const User = require("./Model/userSchema");
 const validateUser = require("./Helper/validateUserData");
 const bcrypt = require("bcrypt");
+const cookiesParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
+app.use(cookiesParser());
 
 // Signup api add new user
 app.post("/signup", async (req, res) => {
@@ -45,14 +48,38 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid login user");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = bcrypt.compare(password, user.password);
     if (isPasswordValid) {
+      const token = jwt.sign({ _id: user._id }, "Shradhanand@PATIL2011"); // add hidden _id and secret key
+      res.cookie("token", token);
       res.send("Login Successfully");
     } else {
       throw new Error(" Invalid login user");
     }
   } catch (err) {
     res.status(400).send("ERROR " + err.message);
+  }
+});
+
+// get profile data
+
+app.get("/profile", async (req, res) => {
+  try {
+    // get cookies from the server
+    const cookies = req.cookies;
+    // verify the cookies
+    const token = jwt.verify(cookies.token, "Shradhanand@PATIL2011"); // add secret key which we add when token was generated
+    if (!token) {
+      throw new Error("Please Login Again");
+    }
+    const getUser = await User.findById(token._id);
+    if (!getUser) {
+      throw new Error("User does not exist");
+    } else {
+      res.send(getUser);
+    }
+  } catch (err) {
+    res.status(400).send("ERROR :" + err.message);
   }
 });
 

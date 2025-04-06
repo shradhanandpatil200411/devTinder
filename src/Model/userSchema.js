@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    gender: {
+      type: String,
+      trim: true,
+      maxLength: 8,
+    },
     photoUrl: {
       type: String,
       default:
