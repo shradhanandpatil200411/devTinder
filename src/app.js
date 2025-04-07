@@ -5,7 +5,6 @@ const User = require("./Model/userSchema");
 const validateUser = require("./Helper/validateUserData");
 const bcrypt = require("bcrypt");
 const cookiesParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 const { userAuth } = require("./Middleware/userAuth");
 
 app.use(express.json());
@@ -47,16 +46,15 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email: email });
+
     if (!user) {
       throw new Error("Invalid login user");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    const isPasswordValid = await user.passwordValidation(password);
 
     if (isPasswordValid) {
-      const token = jwt.sign({ _id: user._id }, "Shradhanand@PATIL2011", {
-        expiresIn: "1d",
-      });
-
+      const token = await user.getJWT();
       res.cookie("token", token, {
         expires: new Date(Date.now() + 1 * 3600000),
       });
