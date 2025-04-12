@@ -67,7 +67,7 @@ const userSchema = new mongoose.Schema(
     },
     about: {
       type: String,
-      minLength: 20,
+      minLength: 5,
       maxLength: 200,
     },
     skills: [String],
@@ -89,8 +89,8 @@ userSchema.methods.getJWT = async function () {
 userSchema.methods.passwordValidation = async function (passwordInputUser) {
   const user = this;
   const passwordHash = user.password;
-
   const isPasswordValid = await bcrypt.compare(passwordInputUser, passwordHash);
+
   return isPasswordValid;
 };
 
