@@ -1,7 +1,7 @@
 const express = require("express");
 const requestRouter = express.Router();
 const { userAuth } = require("../Middleware/userAuth");
-const connectionRequest = require("../Model/connectionRequestSchema");
+const ConnectionRequest = require("../Model/connectionRequestSchema");
 const User = require("../Model/userSchema");
 
 // send connect request api
@@ -24,7 +24,7 @@ requestRouter.post("/request/:status/:userId", userAuth, async (req, res) => {
       throw new Error("Invalid user id");
     }
 
-    const isConnectionRequestValid = await connectionRequest.findOne({
+    const isConnectionRequestValid = await ConnectionRequest.findOne({
       $or: [
         { fromUserId, toUserId },
         {
@@ -38,7 +38,7 @@ requestRouter.post("/request/:status/:userId", userAuth, async (req, res) => {
       throw new Error("request send already");
     }
 
-    const request = new connectionRequest({
+    const request = new ConnectionRequest({
       fromUserId,
       toUserId,
       status,
@@ -50,8 +50,43 @@ requestRouter.post("/request/:status/:userId", userAuth, async (req, res) => {
         req.user.firstName +
         " is " +
         status +
-        (status == " interested " ? "in " : " to ") +
+        (status == "interested" ? " in " : " to ") +
         isUserIdValid.firstName,
+      data,
+    });
+  } catch (err) {
+    res.status(400).send("ERROR :" + err.message);
+  }
+});
+
+requestRouter.post("/review/:status/:requestId", userAuth, async (req, res) => {
+  try {
+    const loginUser = req.user;
+    const { status, requestId } = req.params;
+    console.log(status);
+
+    const isAllowedStatus = ["accepted", "rejected"];
+
+    if (!isAllowedStatus.includes(status)) {
+      return res.status(400).json({ message: "Invalid status " + status });
+    }
+
+    const connectionRequest = await ConnectionRequest.findOne({
+      _id: requestId,
+      toUserId: loginUser._id,
+      status: "interested",
+    });
+
+    if (!connectionRequest) {
+      return res.status(400).json({ message: "connection request not found" });
+    }
+
+    connectionRequest.status = status;
+
+    const data = await connectionRequest.save();
+
+    res.json({
+      message: "connection request " + status,
       data,
     });
   } catch (err) {

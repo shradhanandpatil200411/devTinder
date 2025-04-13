@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../Model/userSchema");
 const bcrypt = require("bcrypt");
-const validateUser = require("../Helper/validateUserData");
+const { validateUser } = require("../Helper/validateUserData");
 const authRouter = express.Router();
 
 // Signup api add new user

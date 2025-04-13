@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { schema } = require("./userSchema");
 
 const connectionRequestSchema = new mongoose.Schema(
   {
@@ -8,6 +7,7 @@ const connectionRequestSchema = new mongoose.Schema(
     },
     toUserId: {
       type: mongoose.Types.ObjectId,
+      ref: "User",
     },
     status: {
       type: String,
