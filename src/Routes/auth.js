@@ -45,15 +45,15 @@ authRouter.post("/login", async (req, res) => {
       throw new Error("Invalid login user");
     }
 
-    const isPasswordValid = await user.passwordValidation(password);
+    const isPasswordValid = await user.passwordValidation(password); // passwordValidation function are schema methods
 
     if (isPasswordValid) {
-      const token = await user.getJWT();
+      const token = await user.getJWT(); // getJWT is schema methods
       res.cookie("token", token, {
         expires: new Date(Date.now() + 1 * 3600000),
       });
 
-      res.send("Login Successfully");
+      res.json({ data: user });
     } else {
       throw new Error(" Invalid login user");
     }
