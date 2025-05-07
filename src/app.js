@@ -6,7 +6,7 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: "http://localhost:5173/",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -25,7 +25,7 @@ app.use("/", userRouter);
 
 connectDB()
   .then(() => {
-    app.listen(3000, "0.0.0.0", () => {
+    app.listen(3000, () => {
       console.log("Server Start on port 3000");
     });
   })

@@ -50,7 +50,7 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordValid) {
       const token = await user.getJWT(); // getJWT is schema methods
       res.cookie("token", token, {
-        expires: new Date(Date.now() + 1 * 3600000),
+        expires: new Date(Date.now() + 2 * 3600000),
       });
 
       res.json({ data: user });

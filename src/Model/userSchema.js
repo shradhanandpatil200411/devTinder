@@ -48,7 +48,9 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       trim: true,
+      require,
       maxLength: 8,
+      lowercase: true,
     },
     photoUrl: {
       type: String,
@@ -80,7 +82,7 @@ const userSchema = new mongoose.Schema(
 userSchema.methods.getJWT = async function () {
   const user = this;
   const token = jwt.sign({ _id: user._id }, "Shradhanand@PATIL2011", {
-    expiresIn: "1d",
+    expiresIn: "2d",
   });
 
   return token;
